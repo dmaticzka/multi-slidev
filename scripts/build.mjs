@@ -21,6 +21,12 @@ const root = path.resolve(__dirname, '..');
 const presentationsDir = path.join(root, 'presentations');
 const distDir = path.join(root, 'dist');
 
+// Optional base prefix for GitHub Pages project sites (e.g. "/multi-slidev").
+// Set the GITHUB_PAGES_BASE_PATH environment variable to the repository's
+// sub-path when deploying to a non-root GitHub Pages URL.
+const rawBase = (process.env.GITHUB_PAGES_BASE_PATH ?? '').replace(/\/$/, '');
+const basePrefix = rawBase && !rawBase.startsWith('/') ? `/${rawBase}` : rawBase;
+
 // Collect all presentation directories
 const presentations = fs
   .readdirSync(presentationsDir, { withFileTypes: true })
@@ -57,7 +63,7 @@ for (const name of presentations) {
 
   console.log(`\n▶ Building "${title}" (${name})…`);
   execSync(
-    `npx slidev build --base /${name}/ --out "${outDir}"`,
+    `npx slidev build --base ${basePrefix}/${name}/ --out "${outDir}"`,
     { cwd: path.join(presentationsDir, name), stdio: 'inherit' }
   );
   console.log(`✔ Built "${title}" → dist/${name}/`);
